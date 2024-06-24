@@ -10,7 +10,6 @@ const {
 } = require("../helpers/utils");
 
 logs.get("/", (req, res) => {
-  const validQueries = ["order", "mistakes", "lastCrisis"];
   const query = Object.keys(req.query)[0];
   let data;
   switch (query) {
@@ -54,7 +53,7 @@ logs.post("/", (req, res) => {
     captainName &&
     title &&
     post &&
-    mistakesWereMadeToday &&
+    mistakesWereMadeToday != null &&
     daysSinceLastCrisis;
   if (validRequest) {
     logsArray.push({
@@ -65,6 +64,19 @@ logs.post("/", (req, res) => {
       daysSinceLastCrisis,
     });
     res.status(201).json(logsArray[logsArray.length - 1]);
+  } else {
+    res.status(400).json({ error: "Something went wrong" });
+  }
+});
+
+logs.delete("/:arrayIndex", (req, res) => {
+  const { arrayIndex } = req.params;
+  const log = logsArray[arrayIndex];
+  if (log) {
+    logsArray.slice(arrayIndex, 1);
+    res.status(200).json(log);
+  } else {
+    res.status(404).json({ error: "Not Found" });
   }
 });
 

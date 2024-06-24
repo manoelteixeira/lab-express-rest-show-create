@@ -4,6 +4,7 @@ const logs = express.Router();
 
 const logsArray = require("../models/log");
 const {
+  validateLog,
   orderLogByCaptainName,
   getLogsByMistakes,
   getLogsBydaysSinceLastCrisis,
@@ -42,27 +43,9 @@ logs.get("/:arrayIndex", (req, res) => {
 });
 
 logs.post("/", (req, res) => {
-  const {
-    captainName,
-    title,
-    post,
-    mistakesWereMadeToday,
-    daysSinceLastCrisis,
-  } = req.body;
-  const validRequest =
-    captainName &&
-    title &&
-    post &&
-    mistakesWereMadeToday != null &&
-    daysSinceLastCrisis;
-  if (validRequest) {
-    logsArray.push({
-      captainName,
-      title,
-      post,
-      mistakesWereMadeToday,
-      daysSinceLastCrisis,
-    });
+  const log = req.body;
+  if (validateLog(log)) {
+    logsArray.push(log);
     res.status(201).json(logsArray[logsArray.length - 1]);
   } else {
     res.status(400).json({ error: "Something went wrong" });
@@ -73,7 +56,7 @@ logs.delete("/:arrayIndex", (req, res) => {
   const { arrayIndex } = req.params;
   const log = logsArray[arrayIndex];
   if (log) {
-    logsArray.slice(arrayIndex, 1);
+    logsArray.splice(arrayIndex, 1);
     res.status(200).json(log);
   } else {
     res.status(404).json({ error: "Not Found" });

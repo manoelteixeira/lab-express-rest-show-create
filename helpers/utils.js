@@ -1,3 +1,22 @@
+function validateLog(log) {
+  const validKeys = {
+    captainName: "string",
+    title: "string",
+    post: "string",
+    mistakesWereMadeToday: "boolean",
+    daysSinceLastCrisis: "number",
+  };
+  if (Object.keys(validKeys).length != Object.keys(log).length) {
+    return false;
+  }
+  for (const key in log) {
+    if (!validKeys[key] || typeof log[key] != validKeys[key]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 function orderLogByCaptainName(arr, method = "asc") {
   if (method == "asc") {
     return arr.sort((a, b) => {
@@ -78,6 +97,7 @@ function getLogsBydaysSinceLastCrisis(arr, value) {
 }
 
 module.exports = {
+  validateLog,
   orderLogByCaptainName,
   getLogsByMistakes,
   getLogsBydaysSinceLastCrisis,

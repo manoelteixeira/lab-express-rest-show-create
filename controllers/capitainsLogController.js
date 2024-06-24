@@ -7,7 +7,7 @@ const {
   orderLogByCaptainName,
   getLogsByMistakes,
   getLogsBydaysSinceLastCrisis,
-} = require("../utils");
+} = require("../helpers/utils");
 
 logs.get("/", (req, res) => {
   const validQueries = ["order", "mistakes", "lastCrisis"];

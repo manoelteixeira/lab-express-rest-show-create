@@ -11,7 +11,11 @@ function validateLog(log) {
   }
   for (const key in log) {
     if (!validKeys[key] || typeof log[key] != validKeys[key]) {
-      return false;
+      if (key == "daysSinceLastCrisis" && !isNaN(log[key])) {
+        continue;
+      } else {
+        return false;
+      }
     }
   }
   return true;

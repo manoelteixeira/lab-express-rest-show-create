@@ -15,4 +15,8 @@ app.get("/", (req, res) => {
   res.status(200).send("Welcome to the captain's log");
 });
 
+app.get("*", (req, res) => {
+  res.status(404).json({ error: "404 Page Not Found" });
+});
+
 module.exports = app;

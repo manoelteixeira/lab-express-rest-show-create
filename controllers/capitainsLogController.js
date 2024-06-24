@@ -38,7 +38,8 @@ logs.get("/:arrayIndex", (req, res) => {
   if (logsArray[arrayIndex]) {
     res.status(200).json(logsArray[arrayIndex]);
   } else {
-    res.status(404).json({ error: "Not Found" });
+    // res.status(404).json({ error: "Not Found" });
+    res.status(404).redirect("*");
   }
 });
 

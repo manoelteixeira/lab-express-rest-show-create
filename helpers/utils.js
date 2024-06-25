@@ -1,25 +1,4 @@
-function validateLog(log) {
-  const validKeys = {
-    captainName: "string",
-    title: "string",
-    post: "string",
-    mistakesWereMadeToday: "boolean",
-    daysSinceLastCrisis: "number",
-  };
-  if (Object.keys(validKeys).length != Object.keys(log).length) {
-    return false;
-  }
-  for (const key in log) {
-    if (!validKeys[key] || typeof log[key] != validKeys[key]) {
-      if (key == "daysSinceLastCrisis" && !isNaN(log[key])) {
-        continue;
-      } else {
-        return false;
-      }
-    }
-  }
-  return true;
-}
+// helpers/utils.js
 
 function orderLogByCaptainName(arr, method = "asc") {
   if (method == "asc") {
@@ -101,7 +80,6 @@ function getLogsBydaysSinceLastCrisis(arr, value) {
 }
 
 module.exports = {
-  validateLog,
   orderLogByCaptainName,
   getLogsByMistakes,
   getLogsBydaysSinceLastCrisis,

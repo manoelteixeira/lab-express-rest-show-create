@@ -3,12 +3,21 @@ const express = require("express");
 const logs = express.Router();
 
 const logsArray = require("../models/log");
+// Import Helper Functions
 const {
-  validateLog,
   orderLogByCaptainName,
   getLogsByMistakes,
   getLogsBydaysSinceLastCrisis,
 } = require("../helpers/utils");
+
+// Import Middleware Functions
+const {
+  checkForCaptainNameKey,
+  checkForTitleKey,
+  checkForPostKey,
+  checkForMistakesWereMadeTodayKey,
+  checkForDaysSinceLastCrisisKey,
+} = require("../validations/capitainLogValidation");
 
 logs.get("/", (req, res) => {
   const query = Object.keys(req.query)[0];
@@ -26,42 +35,67 @@ logs.get("/", (req, res) => {
     default:
       data = logsArray;
   }
-  if (data) {
-    res.status(200).json(data);
+  if (!data) {
+    res.status(404).redirect("*");
   } else {
-    res.status(404).json({ error: "Not Found." });
+    res.status(200).json(data);
   }
 });
 
 logs.get("/:arrayIndex", (req, res) => {
   const { arrayIndex } = req.params;
-  if (logsArray[arrayIndex]) {
-    res.status(200).json(logsArray[arrayIndex]);
-  } else {
-    // res.status(404).json({ error: "Not Found" });
+  const log = logsArray[arrayIndex];
+  if (!log) {
     res.status(404).redirect("*");
-  }
-});
-
-logs.post("/", (req, res) => {
-  const log = req.body;
-  if (validateLog(log)) {
-    logsArray.push(log);
-    res.status(201).json(logsArray[logsArray.length - 1]);
   } else {
-    res.status(400).json({ error: "Something went wrong" });
+    res.status(200).json(logsArray[arrayIndex]);
   }
 });
 
 logs.delete("/:arrayIndex", (req, res) => {
   const { arrayIndex } = req.params;
   const log = logsArray[arrayIndex];
-  if (log) {
+  if (!log) {
+    res.status(404).redirect("*");
+  } else {
     logsArray.splice(arrayIndex, 1);
     res.status(200).json(log);
-  } else {
-    res.status(404).json({ error: "Not Found" });
   }
 });
+
+logs.post(
+  "/",
+  checkForCaptainNameKey,
+  checkForTitleKey,
+  checkForPostKey,
+  checkForMistakesWereMadeTodayKey,
+  checkForDaysSinceLastCrisisKey,
+  (req, res) => {
+    logsArray.push(req.body);
+    res.status(201).json(logsArray[logsArray.length - 1]);
+  }
+);
+
+logs.put(
+  "/:arrayIndex",
+  checkForCaptainNameKey,
+  checkForTitleKey,
+  checkForPostKey,
+  checkForMistakesWereMadeTodayKey,
+  checkForDaysSinceLastCrisisKey,
+  (req, res) => {
+    const { arrayIndex } = req.params;
+    const log = logsArray[arrayIndex];
+    const updatedLog = req.body;
+
+    if (!log) {
+      res.status(404).redirect("*");
+    } else {
+      logsArray[arrayIndex] = updatedLog;
+
+      res.status(202).json(updatedLog);
+    }
+  }
+);
 
 module.exports = logs;
